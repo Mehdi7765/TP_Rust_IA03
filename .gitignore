@@ -5,6 +5,7 @@ output.log
 # Supports du cours (non versionnés)
 *.zip
 *.pdf
+!docs/*.pdf
 # Éditeurs
 .vscode/
 .idea/

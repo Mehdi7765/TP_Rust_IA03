@@ -11,6 +11,7 @@ Mehdi Ez-Zouak, Paul Louis Ledoux et Clément Menaucourt
 | `hello-rust/` | Vérification de l'installation de Rust (`cargo new`) |
 | `TP_Partie1_FeuCirculation/template_projet_p1/` | Partie 1 : feu tricolore, bouton lu par *polling* |
 | `TP_Partie2_Interruptions/template_projet_p2/` | Partie 2 : bouton géré par interruption matérielle (RTIC) |
+| `docs/Explications_TP_Rust.pdf` | Explication simple du code et du TP (à lire en premier) |
 
 ## Matériel
 
