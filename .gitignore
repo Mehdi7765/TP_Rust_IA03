@@ -1,0 +1,10 @@
+# Compilation Rust
+target/
+# Journal de la console RTT (généré par cargo run)
+output.log
+# Supports du cours (non versionnés)
+*.zip
+*.pdf
+# Éditeurs
+.vscode/
+.idea/

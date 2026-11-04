@@ -1,0 +1,19 @@
+[package]
+name = "light_signal"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cortex-m = "0.7.7"
+cortex-m-rt = "0.7.5"
+defmt = "1.0.1"
+defmt-rtt = "1.1.0"
+embedded-hal = "1.0.0"
+panic-probe = { version = "1.0.0", features = ["print-defmt"] }
+rtic = { version = "2.2.0", features = ["cortex-m", "thumbv7-backend"] }
+stm32h7xx-hal = { version = "0.16.0", features = ["stm32h753"] }
+
+[profile.dev]
+opt-level = "s"
+debug = 2
+panic = "abort"
