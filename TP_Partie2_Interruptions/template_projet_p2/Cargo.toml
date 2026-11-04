@@ -17,3 +17,7 @@ stm32h7xx-hal = { version = "0.16.0", features = ["stm32h753"] }
 opt-level = "s"
 debug = 2
 panic = "abort"
+
+[[bin]]
+name = "light_signal"
+path = "src/light_signal_rtic_template.rs"

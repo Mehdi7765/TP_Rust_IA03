@@ -93,7 +93,14 @@ mod app {
         //
         // Hint: look at the `ExtiPin` trait in the stm32h7xx-hal docs,
         // and at the `Edge` enum variants.
-        let btn = todo!();
+        let mut btn = gpioc.pc13.into_input();
+        // b) Relie la ligne EXTI 13 au port C (SYSCFG choisit le port).
+        btn.make_interrupt_source(&mut dp.SYSCFG);
+        // c) Les deux fronts : appui (montant) ET relâchement (descendant),
+        //    pour qu'idle sache si le bouton est maintenu ou non.
+        btn.trigger_on_edge(&mut dp.EXTI, Edge::RisingFalling);
+        // d) Autorise l'interruption sur cette ligne.
+        btn.enable_interrupt(&mut dp.EXTI);
 
     // BEGIN CONFIG : DO NOT EDIT OR REMOVE
         // Delay setup
@@ -139,10 +146,47 @@ mod app {
     //   - you need to declare which shared and local resources this task
     //     uses in the `#[idle(...)]` attribute
     //
-    // #[idle(local = [???], shared = [???])]
-    // fn idle(mut cx: idle::Context) -> ! {
-    //     ...
-    // }
+    #[idle(local = [delay, led_green, led_yellow, led_red], shared = [light_failed])]
+    fn idle(mut cx: idle::Context) -> ! {
+        // 0 = vert, 1 = jaune, 2 = rouge
+        let mut etape = 0;
+
+        loop {
+            // Lecture de la ressource partagée : obligatoirement via lock.
+            let failed = cx.shared.light_failed.lock(|lf| *lf);
+
+            if failed {
+                // Dérangement : jaune clignotant (une période par tour).
+                cx.local.led_green.set_low();
+                cx.local.led_red.set_low();
+                cx.local.led_yellow.set_high();
+                cx.local.delay.delay_ms(500u16);
+                cx.local.led_yellow.set_low();
+                cx.local.delay.delay_ms(500u16);
+            } else if etape == 0 {
+                println!("Vert");
+                cx.local.led_red.set_low();
+                cx.local.led_yellow.set_low();
+                cx.local.led_green.set_high();
+                cx.local.delay.delay_ms(3000u16);
+                etape = 1;
+            } else if etape == 1 {
+                println!("Jaune");
+                cx.local.led_green.set_low();
+                cx.local.led_red.set_low();
+                cx.local.led_yellow.set_high();
+                cx.local.delay.delay_ms(1000u16);
+                etape = 2;
+            } else {
+                println!("Rouge");
+                cx.local.led_green.set_low();
+                cx.local.led_yellow.set_low();
+                cx.local.led_red.set_high();
+                cx.local.delay.delay_ms(3000u16);
+                etape = 0;
+            }
+        }
+    }
 
     // TODO: implement `btn_isr` - the button interrupt handler.
     //
@@ -165,8 +209,22 @@ mod app {
     //   d) add some logging (println!) so you can see on the RTT console
     //      when interrupts fire - this will be very helpful for debugging
     //
-    // #[task(binds = ???, local = [???], shared = [???])]
-    // fn btn_isr(mut cx: btn_isr::Context) {
-    //     ...
-    // }
+    #[task(binds = EXTI15_10, local = [btn], shared = [light_failed])]
+    fn btn_isr(mut cx: btn_isr::Context) {
+        // a) Niveau actuel : haut = appuyé, bas = relâché.
+        let appuye = cx.local.btn.is_high();
+
+        // b) Mise à jour de la ressource partagée.
+        cx.shared.light_failed.lock(|lf| *lf = appuye);
+
+        // c) Acquitte l'interruption, sinon elle se redéclenche en boucle.
+        cx.local.btn.clear_interrupt_pending_bit();
+
+        // d) Trace dans la console RTT.
+        if appuye {
+            println!("ISR : front montant -> bouton appuye, derangement");
+        } else {
+            println!("ISR : front descendant -> bouton relache, cycle normal");
+        }
+    }
 }
