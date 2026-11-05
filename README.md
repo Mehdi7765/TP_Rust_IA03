@@ -11,6 +11,7 @@ Mehdi Ez-Zouak, Paul Louis Ledoux et Clément Menaucourt
 | `hello-rust/` | Vérification de l'installation de Rust (`cargo new`) |
 | `TP_Partie1_FeuCirculation/template_projet_p1/` | Partie 1 : feu tricolore, bouton lu par *polling* |
 | `TP_Partie2_Interruptions/template_projet_p2/` | Partie 2 : bouton géré par interruption matérielle (RTIC), code dans `src/light_signal_rtic_template.rs` |
+| `IA embarquée  reconnaissance vocale - Partie 1-20261104/` | IA embarquée, partie 1 : lecture du microphone (rien à coder), réponses dans `REPONSES.md` |
 | `docs/Explications_TP_Rust.pdf` | Explication simple du code et du TP (à lire en premier) |
 
 ## Matériel

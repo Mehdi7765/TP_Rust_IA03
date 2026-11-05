@@ -1,0 +1,31 @@
+[package]
+name = "micro"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# Burn 0.21 : la version 0.19 perd ~6 Ko de mémoire à chaque étape d'entraînement
+# (plus de mémoire après ~25 étapes sur la carte)
+burn = { version = "0.21.0", default-features = false, features = ["ndarray", "autodiff"] }
+cortex-m = "0.7.7"
+cortex-m-rt = "0.7.5"
+defmt = "1.0.1"
+defmt-rtt = "1.1.0"
+embedded-alloc = "0.6.0"
+embedded-hal = "1.0.0"
+panic-probe = { version = "1.0.0", features = ["print-defmt"] }
+rtic = { version = "2.2.0", features = ["cortex-m", "thumbv7-backend"] }
+stm32h7xx-hal = { version = "0.16.0", features = ["stm32h753"] }
+
+[profile.dev]
+opt-level = "z"
+debug = 2
+panic = "abort"
+
+# Toujours utiliser `cargo run --release` : l'entraînement est ~15x plus rapide qu'en dev.
+# Optimisé pour la taille, sinon Burn ne tient pas dans les 2 Mo de flash.
+[profile.release]
+opt-level = "s"
+codegen-units = 1
+lto = "fat"
+debug = 2
