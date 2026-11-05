@@ -1,0 +1,10 @@
+[target.thumbv7em-none-eabihf]
+runner = "probe-rs run --protocol=swd --chip STM32H753ZI --target-output-file output.log"
+rustflags = [
+  "-C", "link-arg=-Tlink.x",
+  "-C", "link-arg=--nmagic",
+  "-C", "link-arg=-Tdefmt.x",
+]
+
+[build]
+target = "thumbv7em-none-eabihf"
